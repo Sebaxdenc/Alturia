@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: alturia
+          POSTGRES_PASSWORD: alturia
+          POSTGRES_DB: alturia
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://alturia:alturia@localhost:5432/alturia
+      JWT_SECRET: ci-test-secret
+      LLM_CHAT_PROVIDER: ollama
+      EMBEDDING_PROVIDER: ollama
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm --filter api exec eslint "{src,apps,libs,test}/**/*.ts"
+
+      - name: Format check
+        run: pnpm --filter api exec prettier --check "src/**/*.ts" "test/**/*.ts"
+
+      - name: Build
+        run: pnpm --filter api run build
+
+      - name: Apply migrations
+        run: pnpm --filter api exec prisma migrate deploy
+
+      - name: Unit tests
+        run: pnpm --filter api run test
+
+      - name: E2E tests
+        run: pnpm --filter api run test:e2e
+
+  dashboard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm --filter dashboard run lint
+
+      - name: Build
+        run: pnpm --filter dashboard run build
+
+  widget:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm --filter widget run lint
+
+      - name: Build
+        run: pnpm --filter widget run build
