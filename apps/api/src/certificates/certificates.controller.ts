@@ -12,7 +12,8 @@ export class CertificatesController {
 
   @Get(":nationalId")
   async lookup(
-    @Param("nationalId", new ZodValidationPipe(NationalIdSchema)) nationalId: string,
+    @Param("nationalId", new ZodValidationPipe(NationalIdSchema))
+    nationalId: string,
   ) {
     const result = await this.certificates.lookupByNationalId(nationalId);
     if (!result) {

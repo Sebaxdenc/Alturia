@@ -1,13 +1,22 @@
 import { randomInt } from "node:crypto";
-import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
-import type { AppointmentConfirmation, CreateAppointmentInput } from "@alturia/shared";
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
+import type {
+  AppointmentConfirmation,
+  CreateAppointmentInput,
+} from "@alturia/shared";
 import { PrismaService } from "../prisma/prisma.service";
 
 @Injectable()
 export class AppointmentsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createAppointment(input: CreateAppointmentInput): Promise<AppointmentConfirmation> {
+  async createAppointment(
+    input: CreateAppointmentInput,
+  ): Promise<AppointmentConfirmation> {
     return this.prisma.$transaction(async (tx) => {
       // Atomic decrement guarded by availableSlots > 0 — updateMany's `count`
       // tells us whether we actually won a slot, closing the race where two
@@ -17,7 +26,9 @@ export class AppointmentsService {
         data: { availableSlots: { decrement: 1 } },
       });
       if (decremented.count === 0) {
-        const exists = await tx.courseSession.findUnique({ where: { id: input.sessionId } });
+        const exists = await tx.courseSession.findUnique({
+          where: { id: input.sessionId },
+        });
         if (!exists) throw new NotFoundException("Course session not found");
         throw new ConflictException("No available slots for this session");
       }
@@ -30,7 +41,11 @@ export class AppointmentsService {
       const worker = await tx.worker.upsert({
         where: { nationalId: input.nationalId },
         update: { name: input.name, phone: input.phone },
-        create: { nationalId: input.nationalId, name: input.name, phone: input.phone },
+        create: {
+          nationalId: input.nationalId,
+          name: input.name,
+          phone: input.phone,
+        },
       });
 
       const confirmationCode = generateConfirmationCode();

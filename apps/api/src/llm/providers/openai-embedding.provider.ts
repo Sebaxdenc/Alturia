@@ -22,7 +22,9 @@ export class OpenAiEmbeddingProvider implements EmbeddingProvider {
       body: JSON.stringify({ model, input: texts, dimensions: 768 }),
     });
     if (!res.ok) {
-      throw new Error(`OpenAI embed failed (${res.status}): ${await res.text()}`);
+      throw new Error(
+        `OpenAI embed failed (${res.status}): ${await res.text()}`,
+      );
     }
     const body = (await res.json()) as { data: { embedding: number[] }[] };
     return body.data.map((d) => d.embedding);

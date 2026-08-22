@@ -29,12 +29,17 @@ export class ChatService {
     private readonly escalations: EscalationsService,
   ) {}
 
-  async handleMessage(sessionId: string, message: string): Promise<ChatResponse> {
+  async handleMessage(
+    sessionId: string,
+    message: string,
+  ): Promise<ChatResponse> {
     const conversation = await this.prisma.conversation.upsert({
       where: { sessionId },
       update: {},
       create: { sessionId },
-      include: { messages: { orderBy: { createdAt: "asc" }, take: HISTORY_LIMIT } },
+      include: {
+        messages: { orderBy: { createdAt: "asc" }, take: HISTORY_LIMIT },
+      },
     });
 
     await this.prisma.message.create({
@@ -46,7 +51,12 @@ export class ChatService {
     // reply gets generated. Status flips back to OPEN/CLOSED on resolve, at
     // which point the bot resumes normally (see EscalationsService.resolve).
     if (conversation.status === "ESCALATED") {
-      return { reply: "", lowConfidence: false, escalationOffered: false, awaitingHuman: true };
+      return {
+        reply: "",
+        lowConfidence: false,
+        escalationOffered: false,
+        awaitingHuman: true,
+      };
     }
 
     if (matchesEscalationKeyword(message)) {
@@ -65,12 +75,21 @@ export class ChatService {
     });
 
     await this.prisma.message.create({
-      data: { conversationId: conversation.id, role: "BOT", content: result.content },
+      data: {
+        conversationId: conversation.id,
+        role: "BOT",
+        content: result.content,
+      },
     });
 
     // No retrieval yet, so there's no real confidence score to threshold on —
     // both flags stay false until the RAG pipeline lands (see prompt-builder.service.ts).
-    return { reply: result.content, lowConfidence: false, escalationOffered: false, awaitingHuman: false };
+    return {
+      reply: result.content,
+      lowConfidence: false,
+      escalationOffered: false,
+      awaitingHuman: false,
+    };
   }
 
   /** Polled by the widget — returns [] for an unknown/mistyped sessionId rather than erroring. */
@@ -103,7 +122,12 @@ export class ChatService {
       data: { conversationId, role: "BOT", content: reply },
     });
 
-    return { reply, lowConfidence: false, escalationOffered: true, awaitingHuman: false };
+    return {
+      reply,
+      lowConfidence: false,
+      escalationOffered: true,
+      awaitingHuman: false,
+    };
   }
 }
 

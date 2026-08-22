@@ -18,7 +18,9 @@ export class OllamaEmbeddingProvider implements EmbeddingProvider {
       body: JSON.stringify({ model, input: texts }),
     });
     if (!res.ok) {
-      throw new Error(`Ollama embed failed (${res.status}): ${await res.text()}`);
+      throw new Error(
+        `Ollama embed failed (${res.status}): ${await res.text()}`,
+      );
     }
     const body = (await res.json()) as { embeddings: number[][] };
     return body.embeddings;
