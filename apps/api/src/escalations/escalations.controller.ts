@@ -16,7 +16,10 @@ export class EscalationsController {
   /** Public — no auth. Called by the widget when the user asks for a human. */
   @Public()
   @Post()
-  create(@Body(new ZodValidationPipe(CreateEscalationSchema)) body: CreateEscalationInput) {
+  create(
+    @Body(new ZodValidationPipe(CreateEscalationSchema))
+    body: CreateEscalationInput,
+  ) {
     return this.escalations.create(body);
   }
 
@@ -36,7 +39,8 @@ export class EscalationsController {
   @Post(":id/reply")
   reply(
     @Param("id") id: string,
-    @Body(new ZodValidationPipe(ReplyToEscalationSchema)) body: ReplyToEscalationInput,
+    @Body(new ZodValidationPipe(ReplyToEscalationSchema))
+    body: ReplyToEscalationInput,
   ) {
     return this.escalations.reply(id, body.content);
   }

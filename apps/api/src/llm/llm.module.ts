@@ -32,7 +32,9 @@ import { OpenAiEmbeddingProvider } from "./providers/openai-embedding.provider";
           case "openrouter":
             return openrouter;
           default:
-            throw new Error('LLM_CHAT_PROVIDER must be "ollama" | "openrouter"');
+            throw new Error(
+              'LLM_CHAT_PROVIDER must be "ollama" | "openrouter"',
+            );
         }
       },
       inject: [ConfigService, OllamaChatProvider, OpenRouterChatProvider],

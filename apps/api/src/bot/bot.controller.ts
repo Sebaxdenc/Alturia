@@ -8,7 +8,8 @@ import { Public } from "../auth/public.decorator";
 // mockups — see apps/widget/src/widget.css for the full extracted palette.
 const BOT_CONFIG: BotConfig = {
   name: "Asis Altura",
-  greeting: "¡Hola! Soy el asistente virtual de Asis Altura. ¿En qué te puedo ayudar hoy?",
+  greeting:
+    "¡Hola! Soy el asistente virtual de Asis Altura. ¿En qué te puedo ayudar hoy?",
   theme: { primaryColor: "#0180E1", position: "bottom-right" },
 };
 

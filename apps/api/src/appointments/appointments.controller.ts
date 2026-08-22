@@ -1,5 +1,8 @@
 import { Body, Controller, Post } from "@nestjs/common";
-import { CreateAppointmentSchema, type CreateAppointmentInput } from "@alturia/shared";
+import {
+  CreateAppointmentSchema,
+  type CreateAppointmentInput,
+} from "@alturia/shared";
 import { ZodValidationPipe } from "../common/zod-validation.pipe";
 import { Public } from "../auth/public.decorator";
 import { AppointmentsService } from "./appointments.service";
@@ -11,7 +14,10 @@ export class AppointmentsController {
   constructor(private readonly appointments: AppointmentsService) {}
 
   @Post()
-  create(@Body(new ZodValidationPipe(CreateAppointmentSchema)) body: CreateAppointmentInput) {
+  create(
+    @Body(new ZodValidationPipe(CreateAppointmentSchema))
+    body: CreateAppointmentInput,
+  ) {
     return this.appointments.createAppointment(body);
   }
 }

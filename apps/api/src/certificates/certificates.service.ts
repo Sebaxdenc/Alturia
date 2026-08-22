@@ -7,7 +7,9 @@ export class CertificatesService {
   constructor(private readonly prisma: PrismaService) {}
 
   /** Returns null when no worker matches — the controller maps that to 404 (mockup A4). */
-  async lookupByNationalId(nationalId: string): Promise<CertificateLookupResponse | null> {
+  async lookupByNationalId(
+    nationalId: string,
+  ): Promise<CertificateLookupResponse | null> {
     const worker = await this.prisma.worker.findUnique({
       where: { nationalId },
       include: { certificates: true },

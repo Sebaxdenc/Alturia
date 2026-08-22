@@ -7,7 +7,11 @@ import type { ChatParams, ChatResult, LlmChatProvider } from "../llm.interface";
 export class OllamaChatProvider implements LlmChatProvider {
   constructor(private readonly config: ConfigService) {}
 
-  async chat({ systemPrompt, messages, temperature }: ChatParams): Promise<ChatResult> {
+  async chat({
+    systemPrompt,
+    messages,
+    temperature,
+  }: ChatParams): Promise<ChatResult> {
     const baseUrl = this.config.getOrThrow<string>("OLLAMA_BASE_URL");
     const model = this.config.getOrThrow<string>("OLLAMA_CHAT_MODEL");
 
@@ -22,7 +26,9 @@ export class OllamaChatProvider implements LlmChatProvider {
       }),
     });
     if (!res.ok) {
-      throw new Error(`Ollama chat failed (${res.status}): ${await res.text()}`);
+      throw new Error(
+        `Ollama chat failed (${res.status}): ${await res.text()}`,
+      );
     }
     const body = (await res.json()) as { message: { content: string } };
     return { content: body.message.content };

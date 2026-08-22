@@ -1,5 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
-import { CreateKnowledgeSourceSchema, type CreateKnowledgeSourceInput } from "@alturia/shared";
+import {
+  CreateKnowledgeSourceSchema,
+  type CreateKnowledgeSourceInput,
+} from "@alturia/shared";
 import { ZodValidationPipe } from "../common/zod-validation.pipe";
 import { KnowledgeService } from "./knowledge.service";
 
@@ -14,7 +17,10 @@ export class KnowledgeController {
   }
 
   @Post()
-  create(@Body(new ZodValidationPipe(CreateKnowledgeSourceSchema)) body: CreateKnowledgeSourceInput) {
+  create(
+    @Body(new ZodValidationPipe(CreateKnowledgeSourceSchema))
+    body: CreateKnowledgeSourceInput,
+  ) {
     return this.knowledge.create(body);
   }
 

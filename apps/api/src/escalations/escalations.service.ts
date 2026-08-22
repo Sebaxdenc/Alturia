@@ -41,7 +41,11 @@ export class EscalationsService {
   async getDetail(id: string): Promise<EscalationDetail> {
     const escalation = await this.prisma.escalation.findUnique({
       where: { id },
-      include: { conversation: { include: { messages: { orderBy: { createdAt: "asc" } } } } },
+      include: {
+        conversation: {
+          include: { messages: { orderBy: { createdAt: "asc" } } },
+        },
+      },
     });
     if (!escalation) throw new NotFoundException("Escalation not found");
 
@@ -54,12 +58,18 @@ export class EscalationsService {
 
   /** Admin sends a message into the conversation — bumps OPEN -> IN_PROGRESS automatically. */
   async reply(id: string, content: string): Promise<MessageRecord> {
-    const escalation = await this.prisma.escalation.findUnique({ where: { id } });
+    const escalation = await this.prisma.escalation.findUnique({
+      where: { id },
+    });
     if (!escalation) throw new NotFoundException("Escalation not found");
 
     const [message] = await this.prisma.$transaction([
       this.prisma.message.create({
-        data: { conversationId: escalation.conversationId, role: "ADMIN", content },
+        data: {
+          conversationId: escalation.conversationId,
+          role: "ADMIN",
+          content,
+        },
       }),
       this.prisma.escalation.update({
         where: { id },
@@ -70,11 +80,16 @@ export class EscalationsService {
   }
 
   async resolve(id: string): Promise<void> {
-    const escalation = await this.prisma.escalation.findUnique({ where: { id } });
+    const escalation = await this.prisma.escalation.findUnique({
+      where: { id },
+    });
     if (!escalation) throw new NotFoundException("Escalation not found");
 
     await this.prisma.$transaction([
-      this.prisma.escalation.update({ where: { id }, data: { status: "RESOLVED" } }),
+      this.prisma.escalation.update({
+        where: { id },
+        data: { status: "RESOLVED" },
+      }),
       this.prisma.conversation.update({
         where: { id: escalation.conversationId },
         data: { status: "CLOSED" },

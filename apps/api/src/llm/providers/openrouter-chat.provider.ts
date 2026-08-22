@@ -7,7 +7,11 @@ import type { ChatParams, ChatResult, LlmChatProvider } from "../llm.interface";
 export class OpenRouterChatProvider implements LlmChatProvider {
   constructor(private readonly config: ConfigService) {}
 
-  async chat({ systemPrompt, messages, temperature }: ChatParams): Promise<ChatResult> {
+  async chat({
+    systemPrompt,
+    messages,
+    temperature,
+  }: ChatParams): Promise<ChatResult> {
     const apiKey = this.config.getOrThrow<string>("OPENROUTER_API_KEY");
     const model = this.config.getOrThrow<string>("OPENROUTER_CHAT_MODEL");
 
@@ -24,7 +28,9 @@ export class OpenRouterChatProvider implements LlmChatProvider {
       }),
     });
     if (!res.ok) {
-      throw new Error(`OpenRouter chat failed (${res.status}): ${await res.text()}`);
+      throw new Error(
+        `OpenRouter chat failed (${res.status}): ${await res.text()}`,
+      );
     }
     const body = (await res.json()) as {
       choices: { message: { content: string } }[];

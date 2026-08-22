@@ -7,7 +7,9 @@ export class CoursesService {
   constructor(private readonly prisma: PrismaService) {}
 
   async listCourses(): Promise<Course[]> {
-    const courses = await this.prisma.course.findMany({ orderBy: { name: "asc" } });
+    const courses = await this.prisma.course.findMany({
+      orderBy: { name: "asc" },
+    });
     return courses.map((c) => ({ id: c.id, name: c.name, type: c.type }));
   }
 
