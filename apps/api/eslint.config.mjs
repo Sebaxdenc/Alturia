@@ -1,4 +1,5 @@
 // @ts-check
+
 import eslint from '@eslint/js';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import globals from 'globals';
@@ -8,9 +9,13 @@ export default tseslint.config(
   {
     ignores: ['eslint.config.mjs'],
   },
+
   eslint.configs.recommended,
+
   ...tseslint.configs.recommendedTypeChecked,
+
   eslintPluginPrettierRecommended,
+
   {
     languageOptions: {
       globals: {
@@ -24,12 +29,35 @@ export default tseslint.config(
       },
     },
   },
+
   {
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'warn',
       '@typescript-eslint/no-unsafe-argument': 'warn',
-      "prettier/prettier": ["error", { endOfLine: "auto" }],
+
+      '@typescript-eslint/naming-convention': [
+  'error',
+
+  {
+    selector: 'variable',
+    modifiers: ['const'],
+    format: ['camelCase', 'UPPER_CASE', 'PascalCase'],
+  },
+
+  {
+    selector: ['variable', 'function', 'parameter'],
+    format: ['camelCase'],
+    leadingUnderscore: 'allow',
+    trailingUnderscore: 'allow',
+  },
+
+  {
+    selector: 'typeLike',
+    format: ['PascalCase'],
+  },
+],
+      'prettier/prettier': ['error', { endOfLine: 'auto' }],
     },
   },
 );
